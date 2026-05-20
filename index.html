@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Event Registration</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+
+            background: #111827;
+            color: white;
+
+            padding: 20px 40px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav-links a {
+
+            color: white;
+            text-decoration: none;
+
+            margin-left: 20px;
+        }
+
+        .nav-links a:hover {
+
+            color: #60a5fa;
+        }
+
+        /* PAGE */
+
+        .container {
+
+            max-width: 900px;
+
+            margin: 50px auto;
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 30px;
+        }
+
+        /* EVENT DETAILS */
+
+        .event-details {
+
+            background: white;
+
+            padding: 35px;
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .event-details h1 {
+
+            margin-bottom: 20px;
+            color: #111827;
+        }
+
+        .event-details p {
+
+            margin-bottom: 15px;
+            color: #444;
+            line-height: 1.6;
+        }
+
+        /* FORM */
+
+        .registration-form {
+
+            background: white;
+
+            padding: 35px;
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .registration-form h2 {
+
+            margin-bottom: 25px;
+            color: #111827;
+        }
+
+        input {
+
+            width: 100%;
+
+            padding: 14px;
+
+            margin-bottom: 20px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 8px;
+
+            font-size: 16px;
+        }
+
+        button {
+
+            width: 100%;
+
+            padding: 14px;
+
+            background: #2563eb;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 8px;
+
+            font-size: 16px;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        button:hover {
+
+            background: #1d4ed8;
+        }
+
+        /* MOBILE */
+
+        @media(max-width: 768px) {
+
+            .container {
+
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+    <div class="logo">
+        Cresco Events
+    </div>
+
+    <div class="nav-links">
+
+        <a href="events.html">
+            Events
+        </a>
+
+        <a href="admin-login.html">
+            Admin
+        </a>
+
+    </div>
+
+</div>
+
+<!-- PAGE -->
+
+<div class="container">
+
+    <!-- EVENT DETAILS -->
+
+    <div class="event-details">
+
+        <h1 id="eventName"></h1>
+
+        <p>
+            <strong>📅 Date:</strong>
+            <span id="eventDate"></span>
+        </p>
+
+        <p>
+            <strong>📍 Location:</strong>
+            <span id="eventLocation"></span>
+        </p>
+
+        <p id="eventDescription"></p>
+
+    </div>
+
+    <!-- REGISTRATION FORM -->
+
+    <div class="registration-form">
+
+        <h2>Register For Event</h2>
+
+        <form id="registrationForm">
+
+            <input
+                type="text"
+                id="firstname"
+                placeholder="First Name"
+                required
+            >
+
+            <input
+                type="text"
+                id="lastname"
+                placeholder="Last Name"
+                required
+            >
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Email"
+                required
+            >
+
+            <button type="submit">
+                Register Now
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+const params =
+    new URLSearchParams(window.location.search);
+
+const eventId = params.get("id");
+
+let eventData = {};
+
+
+// LOAD EVENT
+
+async function loadEvent() {
+
+    const response = await fetch(
+        `http://127.0.0.1:8000/event/${eventId}`
+    );
+
+    eventData = await response.json();
+
+    document.getElementById("eventName").innerText =
+        eventData.event_name;
+
+    document.getElementById("eventDate").innerText =
+        eventData.event_date;
+
+    document.getElementById("eventLocation").innerText =
+        eventData.event_location;
+
+    document.getElementById("eventDescription").innerText =
+        eventData.event_description;
+}
+
+
+// REGISTER USER
+
+document.getElementById("registrationForm")
+.addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const data = {
+
+        firstname:
+            document.getElementById("firstname").value,
+
+        lastname:
+            document.getElementById("lastname").value,
+
+        email:
+            document.getElementById("email").value,
+
+        event_name:
+            eventData.event_name,
+
+        event_date:
+            eventData.event_date
+    };
+
+    const response = await fetch(
+        "http://127.0.0.1:8000/register",
+        {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(data)
+        }
+    );
+
+   const result = await response.json();
+
+console.log(result);
+
+if (
+    result.result &&
+    result.result.message ===
+    "User already registered for this event"
+) {
+
+    alert("User already registered for this event");
+
+}
+
+else {
+
+    alert("Registration Successful!");
+
+    document.getElementById("registrationForm")
+        .reset();
+}
+
+});
+
+
+// INITIAL LOAD
+
+loadEvent();
+
+</script>
+
+</body>
+</html>

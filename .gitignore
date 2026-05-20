@@ -1,0 +1,6 @@
+.env
+.idea/
+**pycache**/
+*.pyc
+events.db
+.venv/

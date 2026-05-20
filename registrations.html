@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Registrations Dashboard</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+
+            background: #111827;
+            color: white;
+
+            padding: 20px 40px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav-links a {
+
+            color: white;
+            text-decoration: none;
+
+            margin-left: 20px;
+        }
+
+        .nav-links a:hover {
+
+            color: #60a5fa;
+        }
+
+        /* CONTAINER */
+
+        .container {
+
+            max-width: 1200px;
+
+            margin: 40px auto;
+
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+
+            margin-bottom: 25px;
+            color: #111827;
+        }
+
+        /* TABLE */
+
+        table {
+
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+
+            background: #2563eb;
+            color: white;
+
+            padding: 14px;
+            text-align: left;
+        }
+
+        td {
+
+            padding: 14px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+
+            background: #f9fafb;
+        }
+
+        /* SEARCH */
+
+        .search-box {
+
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+
+            width: 300px;
+
+            padding: 12px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 8px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+    <div class="logo">
+        Cresco Admin
+    </div>
+
+    <div class="nav-links">
+
+        <a href="admin.html">
+            Create Event
+        </a>
+
+        <a href="registrations.html">
+            Registrations
+        </a>
+
+    </div>
+
+</div>
+
+<!-- CONTENT -->
+
+<div class="container">
+
+    <h1>Event Registrations</h1>
+
+    <div class="search-box">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search by name or email"
+        >
+
+    </div>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Name</th>
+                <th>Email</th>
+                <th>Event</th>
+                <th>Event Date</th>
+                <th>Registered At</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="registrationTable">
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<script>
+
+// TOKEN CHECK
+
+const token = localStorage.getItem("token");
+
+if (!token) {
+
+    alert("Please login first");
+
+    window.location.href =
+        "admin-login.html";
+}
+
+let registrations = [];
+
+
+// LOAD REGISTRATIONS
+
+async function loadRegistrations() {
+
+    const response = await fetch(
+        "http://127.0.0.1:8000/registrations"
+    );
+
+    registrations = await response.json();
+
+    renderTable(registrations);
+}
+
+
+// RENDER TABLE
+
+function renderTable(data) {
+
+    const table =
+        document.getElementById("registrationTable");
+
+    table.innerHTML = "";
+
+    data.forEach(reg => {
+
+        table.innerHTML += `
+
+            <tr>
+
+                <td>
+                    ${reg.firstname}
+                    ${reg.lastname}
+                </td>
+
+                <td>${reg.email}</td>
+
+                <td>${reg.event_name}</td>
+
+                <td>${reg.event_date}</td>
+
+                <td>${reg.registration_date}</td>
+
+            </tr>
+
+        `;
+    });
+}
+
+
+// SEARCH
+
+document.getElementById("searchInput")
+.addEventListener("keyup", function() {
+
+    const value =
+        this.value.toLowerCase();
+
+    const filtered = registrations.filter(reg =>
+
+        reg.firstname.toLowerCase().includes(value)
+        ||
+        reg.lastname.toLowerCase().includes(value)
+        ||
+        reg.email.toLowerCase().includes(value)
+    );
+
+    renderTable(filtered);
+});
+
+
+// INITIAL LOAD
+
+loadRegistrations();
+
+</script>
+
+</body>
+</html>

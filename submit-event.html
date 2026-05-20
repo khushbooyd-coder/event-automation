@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Submit Event</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+
+            background: #111827;
+            color: white;
+
+            padding: 20px 40px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav-links a {
+
+            color: white;
+            text-decoration: none;
+
+            margin-left: 20px;
+        }
+
+        .nav-links a:hover {
+
+            color: #60a5fa;
+        }
+
+        /* CONTAINER */
+
+        .container {
+
+            max-width: 700px;
+
+            margin: 50px auto;
+
+            background: white;
+
+            padding: 40px;
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+
+            margin-bottom: 30px;
+            color: #111827;
+        }
+
+        input,
+        textarea {
+
+            width: 100%;
+
+            padding: 14px;
+
+            margin-bottom: 20px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 8px;
+
+            font-size: 16px;
+        }
+
+        button {
+
+            width: 100%;
+
+            padding: 14px;
+
+            background: #2563eb;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 8px;
+
+            font-size: 16px;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        button:hover {
+
+            background: #1d4ed8;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+    <div class="logo">
+        Cresco Events
+    </div>
+
+    <div class="nav-links">
+
+        <a href="events.html">
+            Events
+        </a>
+
+        <a href="submit-event.html">
+            Submit Event
+        </a>
+
+        <a href="admin-login.html">
+            Admin
+        </a>
+
+    </div>
+
+</div>
+
+<!-- FORM -->
+
+<div class="container">
+
+    <h1>Submit Your Event</h1>
+
+    <form id="eventForm">
+
+        <input
+            type="text"
+            id="event_name"
+            placeholder="Event Name"
+            required
+        >
+
+        <input
+            type="date"
+            id="event_date"
+            required
+        >
+
+        <input
+            type="text"
+            id="event_location"
+            placeholder="Event Location"
+            required
+        >
+
+        <textarea
+            id="event_description"
+            placeholder="Event Description"
+            rows="5"
+        ></textarea>
+
+        <button type="submit">
+            Submit Event
+        </button>
+
+    </form>
+
+</div>
+
+<script>
+
+document.getElementById("eventForm")
+.addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const data = {
+
+        event_name:
+            document.getElementById("event_name").value,
+
+        event_date:
+            document.getElementById("event_date").value,
+
+        event_location:
+            document.getElementById("event_location").value,
+
+        event_description:
+            document.getElementById("event_description").value
+    };
+
+    const response = await fetch(
+        "http://127.0.0.1:8000/create-event",
+        {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(data)
+        }
+    );
+
+    const result = await response.json();
+
+    console.log(result);
+
+    alert(
+        "Event submitted successfully and pending admin approval!"
+    );
+
+    document.getElementById("eventForm")
+        .reset();
+
+});
+
+</script>
+
+</body>
+</html>
