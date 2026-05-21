@@ -50,5 +50,55 @@ Cresco Team
         "recommended": False
     }
 
+import random
+
+
+def simulate_venue_responses(
+    outreach_results
+):
+
+    updated_results = []
+
+    for venue in outreach_results:
+
+        proposal_received = random.choice(
+            [True, False]
+        )
+
+        if proposal_received:
+
+            quoted_price = random.choice([
+                "$6,500",
+                "$7,000",
+                "$8,500"
+            ])
+
+            status = "Proposal Received"
+
+        else:
+
+            quoted_price = "Pending"
+
+            status = "Awaiting Response"
+
+        updated_results.append({
+
+            "venue_name":
+                venue["venue_name"],
+
+            "proposal_received":
+                proposal_received,
+
+            "quoted_price":
+                quoted_price,
+
+            "status":
+                status
+        })
+
+    return updated_results
+
+
+
 
 

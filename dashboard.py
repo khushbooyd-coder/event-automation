@@ -3,65 +3,76 @@ import plotly.express as px
 import streamlit as st
 
 from agents.orchestrator import run_campaign
+
 from services.venue_email_service import (
     send_venue_email
 )
 
-
-# ---------------------------------------------------
+# =====================================================
 # PAGE CONFIG
-# ---------------------------------------------------
+# =====================================================
 
 st.set_page_config(
+
     page_title="AI Event Orchestrator",
+
     layout="wide"
 )
 
-st.title("AI Event Marketing Orchestrator")
+st.title(
+    "AI Event Marketing Orchestrator"
+)
 
 st.write(
     "Multi-Agent Campaign Automation Dashboard"
 )
 
-
-# ---------------------------------------------------
+# =====================================================
 # SIDEBAR CONFIGURATION
-# ---------------------------------------------------
+# =====================================================
 
-st.sidebar.title("Campaign Settings")
+st.sidebar.title(
+    "Campaign Settings"
+)
 
 event_name = st.sidebar.text_input(
+
     "Event Name",
+
     "AI Governance Dinner"
 )
 
 audience = st.sidebar.text_input(
+
     "Audience",
+
     "CIOs"
 )
 
 location = st.sidebar.text_input(
+
     "Location",
+
     "Dallas"
 )
 
 event_date = st.sidebar.text_input(
+
     "Event Date",
+
     "June 15, 2026"
 )
 
-
 uploaded_file = st.sidebar.file_uploader(
+
     "Upload Contacts CSV",
+
     type=["csv"]
 )
 
-
-
-# ---------------------------------------------------
-# RUN CAMPAIGN
-# ---------------------------------------------------
-
+# =====================================================
+# FILE UPLOAD
+# =====================================================
 
 contacts_data = None
 
@@ -75,46 +86,79 @@ if uploaded_file is not None:
         "CSV Uploaded Successfully"
     )
 
-
+# =====================================================
+# RUN CAMPAIGN
+# =====================================================
 
 if st.button("Run Campaign"):
 
-    results = run_campaign(
-        event_name,
-        audience,
-        location,
-        event_date,
-        contacts_data
+    with st.spinner(
+        "AI agents are executing campaign workflows..."
+    ):
+
+        results = run_campaign(
+
+            event_name,
+
+            audience,
+
+            location,
+
+            event_date,
+
+            contacts_data
+        )
+
+    st.success(
+        "Campaign Executed Successfully"
     )
 
-    st.success("Campaign Executed Successfully")
-
-    # ---------------------------------------------------
+    # =====================================================
     # TABS
-    # ---------------------------------------------------
+    # =====================================================
 
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
+
         "Overview",
+
         "Outreach",
+
         "Follow-ups",
+
         "Analytics",
+
         "Venues",
-        "Venue Outreach"
+
+        "Venue Outreach",
+
+        "Executive Strategy",
+
+        "Workflow Engine",
+
+        "Venue Finalization"
     ])
 
-    # ===================================================
+    # =====================================================
     # TAB 1 → OVERVIEW
-    # ===================================================
+    # =====================================================
 
     with tab1:
 
-        st.header("Campaign Brief")
+        st.header(
+            "Campaign Brief"
+        )
 
-        st.json(results["campaign_brief"])
+        st.json(
+            results["campaign_brief"]
+        )
 
-        st.header("Campaign Metrics")
+        st.header(
+            "Campaign Metrics"
+        )
 
-        analytics = results["analytics_report"]
+        analytics = results[
+            "analytics_report"
+        ]
 
         col1, col2, col3, col4 = st.columns(4)
 
@@ -138,7 +182,9 @@ if st.button("Run Campaign"):
             analytics["delivery_rate"]
         )
 
-        st.header("Target Contacts")
+        st.header(
+            "Target Contacts"
+        )
 
         contacts_df = pd.DataFrame(
             results["target_contacts"]
@@ -149,26 +195,55 @@ if st.button("Run Campaign"):
             use_container_width=True
         )
 
-    # ===================================================
+
+        st.header(
+            "CRM Synchronization Status"
+        )
+
+        crm_df = pd.DataFrame(
+            results["crm_results"]
+        )
+
+        st.dataframe(
+            crm_df,
+            use_container_width=True
+        )
+
+
+    # =====================================================
     # TAB 2 → OUTREACH
-    # ===================================================
+    # =====================================================
 
     with tab2:
 
-        st.header("Email Delivery Results")
+        st.header(
+            "Email Delivery Results"
+        )
 
         email_df = pd.DataFrame(
             results["email_results"]
         )
 
-        st.dataframe(
-            email_df,
-            use_container_width=True
+        if not email_df.empty:
+
+            st.dataframe(
+                email_df,
+                use_container_width=True
+            )
+
+        else:
+
+            st.warning(
+                "Email sending currently disabled for demo stability."
+            )
+
+        st.header(
+            "LinkedIn Outreach"
         )
 
-        st.header("LinkedIn Outreach")
-
-        for outreach in results["linkedin_outreach"]:
+        for outreach in results[
+            "linkedin_outreach"
+        ]:
 
             st.subheader(
                 outreach["contact"]["firstname"]
@@ -178,13 +253,15 @@ if st.button("Run Campaign"):
                 outreach["linkedin_message"]
             )
 
-    # ===================================================
+    # =====================================================
     # TAB 3 → FOLLOW-UPS
-    # ===================================================
+    # =====================================================
 
     with tab3:
 
-        st.header("Follow-up Sequences")
+        st.header(
+            "Follow-up Sequences"
+        )
 
         for followup in results[
             "followup_sequences"
@@ -204,29 +281,55 @@ if st.button("Run Campaign"):
                     sequence["message"]
                 )
 
-
-    # ===================================================
+    # =====================================================
     # TAB 4 → ANALYTICS
-    # ===================================================
+    # =====================================================
 
     with tab4:
 
-        st.header("Email Delivery Analytics")
-
-        delivery_chart = px.pie(
-            email_df,
-            names="status",
-            title="Email Delivery Status"
+        st.header(
+            "Email Delivery Analytics"
         )
 
-        st.plotly_chart(
-            delivery_chart,
-            use_container_width=True
+        email_df = pd.DataFrame(
+            results["email_results"]
         )
 
-        st.header("Campaign Summary")
+        if (
+            not email_df.empty
+            and "status" in email_df.columns
+        ):
 
-        st.json(results["analytics_report"])
+            delivery_chart = px.pie(
+
+                email_df,
+
+                names="status",
+
+                title="Email Delivery Status"
+            )
+
+            st.plotly_chart(
+
+                delivery_chart,
+
+                use_container_width=True
+            )
+
+        else:
+
+            st.warning(
+                "No email delivery analytics available."
+            )
+
+        st.header(
+            "Campaign Summary"
+        )
+
+        st.json(
+            results["analytics_report"]
+        )
+
 
     # ===================================================
     # TAB 5 → VENUES
@@ -234,30 +337,111 @@ if st.button("Run Campaign"):
 
     with tab5:
 
-        st.header("Venue Recommendations")
+        venues = results[
+            "venue_recommendations"
+        ]
 
-        venue_df = pd.DataFrame(
-            results["venue_recommendations"]
+        # ---------------------------------------
+        # AI BEST VENUE SELECTION
+        # ---------------------------------------
+
+        best_venue = max(
+
+            venues,
+
+            key=lambda x: int(
+                x["score"].replace(
+                    "%",
+                    ""
+                )
+            )
         )
 
+        # ---------------------------------------
+        # SINGLE AI RECOMMENDATION BOX
+        # ---------------------------------------
+
+        st.success(
+            f"""
+    🏆 AI Recommended Venue
+
+    Venue:
+    {best_venue['name']}
+
+    Score:
+    {best_venue['score']}
+
+    Reason:
+    {best_venue['reason']}
+    """
+        )
+
+        # ---------------------------------------
+        # VENUE TABLE
+        # ---------------------------------------
+
+        st.header(
+            "Venue Recommendations"
+        )
+
+        venue_df = pd.DataFrame(
+            venues
+        )
+
+        # CLEAN TABLE COLUMNS
+
         venue_df = venue_df[[
+
             "name",
+
             "address",
+
             "rating",
+
             "score",
+
             "estimated_cost"
         ]]
 
+        # CLEAN COLUMN NAMES
+
+        venue_df.columns = [
+
+            "Venue Name",
+
+            "Address",
+
+            "Rating",
+
+            "AI Score",
+
+            "Estimated Cost"
+        ]
+
         st.dataframe(
+
             venue_df,
-            use_container_width=True
+
+            use_container_width=True,
+
+            hide_index=True
         )
 
-        st.subheader("AI Venue Insights")
+        # ---------------------------------------
+        # DETAILED VENUE CARDS
+        # ---------------------------------------
 
-        for venue in results["venue_recommendations"]:
+        st.subheader(
+            "AI Venue Insights"
+        )
+
+        for venue in venues:
             with st.container(border=True):
-                col1, col2 = st.columns([3, 1])
+                col1, col2 = st.columns([4, 1])
+
+                # -----------------------------------
+                # LEFT SIDE
+                # -----------------------------------
 
                 with col1:
                     st.markdown(
@@ -265,56 +449,63 @@ if st.button("Run Campaign"):
                     )
 
                     st.write(
-                        f"Type: {venue['type']}"
+                        f"📍 Address: {venue['address']}"
                     )
 
                     st.write(
-                        f"Address: {venue['address']}"
+                        f"⭐ Rating: {venue['rating']}"
                     )
 
                     st.write(
-                        f"Rating: {venue['rating']}"
+                        f"👥 Capacity: {venue['capacity']} attendees"
                     )
 
                     st.write(
-                        f"Capacity: {venue['capacity']} attendees"
+                        f"💰 Estimated Cost: {venue['estimated_cost']}"
                     )
 
                     st.write(
-                        f"Estimated Cost: {venue['estimated_cost']}"
+                        f"🧠 AI Insight: {venue['reason']}"
                     )
 
-                    st.write(
-                        f"Why Recommended: {venue['reason']}"
-                    )
+                # -----------------------------------
+                # RIGHT SIDE
+                # -----------------------------------
 
                 with col2:
                     st.metric(
-                        "AI Match Score",
+                        "AI Score",
                         venue["score"]
                     )
 
                     st.link_button(
-                        "View Venue",
+                        "Open Map",
                         venue["maps_link"]
                     )
 
 
-    # ===================================================
+
+
+# =====================================================
     # TAB 6 → VENUE OUTREACH
-    # ===================================================
+    # =====================================================
 
     with tab6:
 
-        st.header("Venue Proposal Outreach")
+        st.header(
+            "Venue Proposal Outreach"
+        )
 
         for outreach in results[
             "venue_outreach_results"
         ]:
+
             with st.container(border=True):
+
                 col1, col2 = st.columns([4, 1])
 
                 with col1:
+
                     st.subheader(
                         outreach["venue"]
                     )
@@ -332,21 +523,24 @@ if st.button("Run Campaign"):
                     )
 
                 with col2:
+
                     st.metric(
                         "Status",
                         outreach["status"]
                     )
 
                     if st.button(
-                            f"Send Proposal Request to {outreach['venue']}",
-                            key=outreach["venue"]
+
+                        f"Send Proposal Request to {outreach['venue']}",
+
+                        key=outreach["venue"]
                     ):
 
                         send_result = send_venue_email(
 
-                            sender_email="khushbooyd@gmail.com",
+                            sender_email="your_email@gmail.com",
 
-                            app_password="nsdnywyzopvbcavy",
+                            app_password="your_app_password",
 
                             receiver_email=outreach["venue_email"],
 
@@ -367,18 +561,23 @@ if st.button("Run Campaign"):
                                 send_result["error"]
                             )
 
-        st.header("Proposal Tracking")
+        st.header(
+            "Proposal Tracking"
+        )
 
         tracking_data = []
 
         for outreach in results[
             "venue_outreach_results"
         ]:
+
             tracking_data.append({
 
-                "Venue": outreach["venue"],
+                "Venue":
+                    outreach["venue"],
 
-                "Status": outreach["status"],
+                "Status":
+                    outreach["status"],
 
                 "Proposal Received":
                     outreach["proposal_received"],
@@ -396,11 +595,133 @@ if st.button("Run Campaign"):
             use_container_width=True
         )
 
+    # =====================================================
+    # TAB 7 → EXECUTIVE STRATEGY
+    # =====================================================
 
+    with tab7:
 
+        st.header(
+            "AI Executive Event Strategy"
+        )
 
+        strategy = results[
+            "executive_strategy"
+        ]
 
+        st.success(
+            strategy["theme"]
+        )
 
+        st.subheader(
+            "Discussion Topics"
+        )
 
+        for topic in strategy[
+            "discussion_topics"
+        ]:
 
+            st.write(f"• {topic}")
+
+        st.subheader(
+            "Networking Strategy"
+        )
+
+        for item in strategy[
+            "networking_strategy"
+        ]:
+
+            st.write(f"• {item}")
+
+    # =====================================================
+    # TAB 8 → WORKFLOW ENGINE
+    # =====================================================
+
+    with tab8:
+
+        st.header(
+            "AI Campaign Workflow Engine"
+        )
+
+        workflow_df = pd.DataFrame(
+            results["workflow_status"]
+        )
+
+        st.dataframe(
+            workflow_df,
+            use_container_width=True
+        )
+
+        st.subheader(
+            "AI Execution Timeline"
+        )
+
+        for item in results[
+            "workflow_status"
+        ]:
+
+            status = item["status"]
+
+            if status == "Completed":
+
+                st.success(
+                    f"✓ {item['step']}"
+                )
+
+            elif status == "In Progress":
+
+                st.warning(
+                    f"⏳ {item['step']}"
+                )
+
+            else:
+
+                st.info(
+                    f"• {item['step']}"
+                )
+
+    # =====================================================
+    # TAB 9 → VENUE FINALIZATION
+    # =====================================================
+
+    with tab9:
+
+        st.subheader(
+            "AI Venue Finalization Engine"
+        )
+
+        final = results[
+            "finalized_venue"
+        ]
+
+        if final:
+
+            st.success(
+                f"""
+🏆 FINAL VENUE SELECTED
+
+Venue:
+{final['venue_name']}
+
+Quoted Price:
+{final['quoted_price']}
+
+ROI Score:
+{final['roi_score']}
+
+Reason:
+{final['reason']}
+"""
+            )
+
+            st.metric(
+                "Final Booking Status",
+                final["status"]
+            )
+
+        else:
+
+            st.warning(
+                "No finalized venue yet."
+            )
 
