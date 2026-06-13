@@ -58,6 +58,11 @@ def run_campaign(
     # AGENT 1 → AUDIENCE INTELLIGENCE
     # =====================================================
 
+
+    from agents.lead_generation_agent import (
+        get_target_executives
+    )
+
     if uploaded_contacts is not None:
 
         audience_contacts = (
@@ -69,8 +74,17 @@ def run_campaign(
     else:
 
         audience_contacts = (
-            get_target_audience()
+
+            get_target_executives(
+
+                title=audience,
+
+                location=location,
+
+                limit=1000
+            )
         )
+
 
     # =====================================================
     # AGENT 2 → COPYWRITER
