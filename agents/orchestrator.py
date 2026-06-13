@@ -81,7 +81,7 @@ def run_campaign(
 
                 location=location,
 
-                limit=1000
+                limit=10
             )
         )
 
