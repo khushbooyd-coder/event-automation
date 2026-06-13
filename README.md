@@ -1,5 +1,9 @@
 # 🎯 Event Automation Platform
 
+![Python](https://img.shields.io/badge/Python-3.13-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-AI_App-red)
+![OpenAI](https://img.shields.io/badge/OpenAI-Integrated-green)
+
 AI-powered event automation platform built using Python agents, Streamlit, HubSpot, LinkedIn automation, and email workflows.
 
 ---
