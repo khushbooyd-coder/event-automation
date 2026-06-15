@@ -14,7 +14,7 @@ def search_venues(
     event_type="business event venue"
 ):
 
-    query = f"{event_type} in {city}"
+    query = f"business conference hotel in {city}"
 
     url = (
         "https://maps.googleapis.com/maps/api/place/textsearch/json"
@@ -35,7 +35,22 @@ def search_venues(
 
     results = data.get("results", [])
 
-    venues = []
+    filtered_results = []
+
+    venues = []   # <-- Initialize here
+
+    for place in results:
+
+        address = place.get(
+            "formatted_address",
+            ""
+        ).lower()
+
+        if city.lower() in address:
+            filtered_results.append(place)
+
+    if filtered_results:
+        results = filtered_results
 
     for place in results[:5]:
 

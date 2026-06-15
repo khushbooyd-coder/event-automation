@@ -2,6 +2,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 import time
+import os
 
 from agents.orchestrator import run_campaign
 
@@ -323,9 +324,14 @@ if st.button("🚀 Run AI Campaign"):
         for outreach in results[
             "linkedin_outreach"
         ]:
-
             st.subheader(
-                outreach["contact"]["firstname"]
+                outreach["contact"].get(
+                    "firstname",
+                    outreach["contact"].get(
+                        "first_name",
+                        "Executive"
+                    )
+                )
             )
 
             st.code(
@@ -347,7 +353,13 @@ if st.button("🚀 Run AI Campaign"):
         ]:
 
             st.subheader(
-                followup["contact"]["firstname"]
+                followup["contact"].get(
+                    "firstname",
+                    followup["contact"].get(
+                        "first_name",
+                        "Executive"
+                    )
+                )
             )
 
             for sequence in followup["sequence"]:
@@ -424,17 +436,27 @@ if st.button("🚀 Run AI Campaign"):
         # AI BEST VENUE SELECTION
         # ---------------------------------------
 
-        best_venue = max(
+        if venues:
 
-            venues,
+            best_venue = max(
 
-            key=lambda x: int(
-                x["score"].replace(
-                    "%",
-                    ""
+                venues,
+
+                key=lambda x: int(
+                    x["score"].replace(
+                        "%",
+                        ""
+                    )
                 )
             )
-        )
+
+        else:
+
+            st.warning(
+                "No venues found."
+            )
+
+            st.stop()
 
         # ---------------------------------------
         # SINGLE AI RECOMMENDATION BOX
@@ -586,7 +608,13 @@ if st.button("🚀 Run AI Campaign"):
                 with col1:
 
                     st.subheader(
-                        outreach["venue"]
+                        outreach.get(
+                            "venue",
+                            outreach.get(
+                                "venue_name",
+                                "Unknown Venue"
+                            )
+                        )
                     )
 
                     st.write(
@@ -608,18 +636,28 @@ if st.button("🚀 Run AI Campaign"):
                         outreach["status"]
                     )
 
+                    venue_name = outreach.get(
+                        "venue",
+                        outreach.get(
+                            "venue_name",
+                            "Unknown Venue"
+                        )
+                    )
+
                     if st.button(
 
-                        f"Send Proposal Request to {outreach['venue']}",
+                            f"Send Proposal Request to {venue_name}",
 
-                        key=outreach["venue"]
+                            key=venue_name
                     ):
 
                         send_result = send_venue_email(
 
-                            sender_email="your_email@gmail.com",
+                            sender_email=os.getenv("EMAIL_ADDRESS"),
 
-                            app_password="your_app_password",
+                            app_password=os.getenv(
+                                "EMAIL_APP_PASSWORD"
+                            ),
 
                             receiver_email=outreach["venue_email"],
 
@@ -653,7 +691,13 @@ if st.button("🚀 Run AI Campaign"):
             tracking_data.append({
 
                 "Venue":
-                    outreach["venue"],
+                    outreach.get(
+                        "venue",
+                        outreach.get(
+                            "venue_name",
+                            "Unknown Venue"
+                        )
+                    ),
 
                 "Status":
                     outreach["status"],

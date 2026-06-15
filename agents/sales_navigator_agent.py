@@ -1,9 +1,7 @@
 import pandas as pd
 
 
-def import_sales_navigator_csv(
-    uploaded_file
-):
+def import_sales_navigator_csv(uploaded_file):
 
     df = pd.read_csv(uploaded_file)
 
@@ -11,49 +9,26 @@ def import_sales_navigator_csv(
 
     for _, row in df.iterrows():
 
-        lead = {
+        leads.append({
 
-            "first_name": row.get(
-                "First Name",
-                ""
-            ),
+            "firstname": row.get("First Name", ""),
 
-            "last_name": row.get(
-                "Last Name",
-                ""
-            ),
+            "lastname": row.get("Last Name", ""),
 
             "full_name": (
-                f"{row.get('First Name','')} "
-                f"{row.get('Last Name','')}"
+                f"{row.get('First Name', '')} "
+                f"{row.get('Last Name', '')}"
             ).strip(),
 
-            "title": row.get(
-                "Title",
-                ""
-            ),
+            "title": row.get("Title", ""),
 
-            "company": row.get(
-                "Company",
-                ""
-            ),
+            "company": row.get("Company", ""),
 
-            "location": row.get(
-                "Location",
-                ""
-            ),
+            "location": row.get("Location", ""),
 
-            "linkedin_url": row.get(
-                "LinkedIn URL",
-                ""
-            ),
+            "linkedin_url": row.get("LinkedIn URL", ""),
 
-            "email": row.get(
-                "Email",
-                ""
-            )
-        }
-
-        leads.append(lead)
+            "email": row.get("Email", "")
+        })
 
     return leads

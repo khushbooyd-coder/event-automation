@@ -258,17 +258,38 @@ def run_campaign(
     # AI AUTO VENUE DECISION ENGINE
     # =====================================================
 
-    best_venue = max(
+    if venue_recommendations:
 
-        venue_recommendations,
+        best_venue = max(
 
-        key=lambda venue: int(
-            venue["score"].replace(
-                "%",
-                ""
+            venue_recommendations,
+
+            key=lambda venue: int(
+                venue["score"].replace(
+                    "%",
+                    ""
+                )
             )
         )
-    )
+
+    else:
+
+        best_venue = {
+
+            "name": "No Venue Found",
+
+            "score": "0%",
+
+            "reason": "Google Places returned no venues.",
+
+            "address": "",
+
+            "maps_link": "",
+
+            "estimated_cost": "N/A",
+
+            "email": "events@example.com"
+        }
 
     selected_venue = {
 
