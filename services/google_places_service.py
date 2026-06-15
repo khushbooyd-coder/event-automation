@@ -27,7 +27,8 @@ def search_venues(
 
     response = requests.get(
         url,
-        params=params
+        params=params,
+        timeout=15
     )
 
     data = response.json()
