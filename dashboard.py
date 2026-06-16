@@ -21,6 +21,76 @@ st.set_page_config(
     layout="wide"
 )
 
+st.markdown("""
+<style>
+
+/* Main App */
+.stApp{
+    background-color:#0B1120;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"]{
+    background:#111827;
+}
+
+/* Buttons */
+.stButton > button{
+    background:#2563EB;
+    color:white;
+    border:none;
+    border-radius:10px;
+    font-weight:600;
+}
+
+.stButton > button:hover{
+    background:#1D4ED8;
+}
+
+/* Success Box */
+div[data-baseweb="notification"]{
+    border-radius:12px;
+}
+
+/* Tabs */
+button[data-baseweb="tab"]{
+    font-weight:600;
+    color:#CBD5E1;
+}
+
+button[data-baseweb="tab"][aria-selected="true"]{
+    color:#60A5FA;
+}
+
+/* Dataframes */
+[data-testid="stDataFrame"]{
+    border-radius:12px;
+}
+
+/* Metrics */
+[data-testid="metric-container"]{
+    background:#111827;
+    border:1px solid #1F2937;
+    border-radius:14px;
+    padding:15px;
+}
+
+/* Headers */
+h1{
+    color:white;
+}
+
+h2{
+    color:#F8FAFC;
+}
+
+h3{
+    color:#E5E7EB;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 st.title(
     "🚀 Cresco AI Event Marketing Platform"
 )
